@@ -7,9 +7,10 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="mb-4">👥 Listado de Clientes</h1>
-        <a href="{{ url_for('index') }}" class="btn btn-info mb-3">⬅️ Volver a Inventario</a>
+        <h1 class="mb-4"> Listado de Clientes</h1>
         <a href="{{ url_for('add_cliente') }}" class="btn btn-primary mb-3">Agregar Nuevo Cliente</a>
+        <a href="{{ url_for('index') }}" class="btn btn-info mb-3">Volver a Inventario</a>
+        <a href="{{ url_for('pedidos_index') }}" class="btn btn-secondary mb-3">Ver Pedidos </a>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

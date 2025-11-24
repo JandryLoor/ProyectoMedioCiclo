@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="mb-4">✏️ Editar Producto: {{ producto.nombre_producto }}</h1>
+        <h1 class="mb-4"> Editar Producto: {{ producto.nombre_producto }}</h1>
         
         <form method="POST" action="{{ url_for('update_product', id_producto=producto.id_producto) }}">
             

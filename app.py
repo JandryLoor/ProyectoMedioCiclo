@@ -186,5 +186,29 @@ def add_cliente():
             
     return render_template('clientes/add_cliente.html')
 
+@app.route('/pedidos')
+def pedidos_index():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    
+    sql = """
+    SELECT 
+        p.id_pedido, 
+        c.nombre AS nombre_cliente, 
+        p.fecha_pedido, 
+        p.estado,
+        p.total
+    FROM Pedidos p
+    JOIN Clientes c ON p.id_cliente = c.id_cliente
+    ORDER BY p.fecha_pedido DESC;
+    """
+    cursor.execute(sql)
+    pedidos = cursor.fetchall()
+    
+    cursor.close()
+    db.close()
+    
+    return render_template('pedidos/pedidos_index.html', pedidos=pedidos)
+
 if __name__ == '__main__':
     app.run(debug=True)
