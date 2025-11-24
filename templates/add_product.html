@@ -9,16 +9,7 @@
     <div class="container mt-4">
         <h1 class="mb-4"> Agregar Nuevo Producto</h1>
         
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
         <form method="POST" action="{{ url_for('add_product') }}">
-            
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre del Producto</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" required>
