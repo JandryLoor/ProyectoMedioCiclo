@@ -151,5 +151,40 @@ def delete_product(id_producto):
 
     return redirect(url_for('index'))
 
+@app.route('/clientes')
+def clientes_index():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    sql = "SELECT id_cliente, nombre, email, telefono FROM Clientes"
+    cursor.execute(sql)
+    clientes = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return render_template('clientes/clientes_index.html', clientes=clientes)
+
+
+@app.route('/add_cliente', methods=['GET', 'POST'])
+def add_cliente():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        email = request.form['email']
+        telefono = request.form['telefono']
+        
+        try:
+            db = get_db_connection()
+            cursor = db.cursor()
+            sql = "INSERT INTO Clientes (nombre, email, telefono) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (nombre, email, telefono))
+            db.commit()
+            flash('Cliente agregado correctamente.', 'success')
+            cursor.close()
+            db.close()
+            return redirect(url_for('clientes_index'))
+        except mysql.connector.Error as err:
+            flash(f"Error al agregar cliente: {err}", 'danger')
+            return redirect(url_for('add_cliente'))
+            
+    return render_template('clientes/add_cliente.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
