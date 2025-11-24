@@ -40,7 +40,7 @@
                     <td>{{ pedido.estado }}</td>
                     <td>${{ "{:,.2f}".format(pedido.total) }}</td>
                     <td>
-                        <a href="#" class="btn btn-sm btn-info">Ver Detalles</a> 
+                        <a href="{{ url_for('ver_detalle_pedido', id_pedido=pedido.id_pedido) }}" class="btn btn-sm btn-info">Ver Detalles</a>
                     </td>
                 </tr>
                 {% endfor %}

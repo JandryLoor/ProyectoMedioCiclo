@@ -210,5 +210,64 @@ def pedidos_index():
     
     return render_template('pedidos/pedidos_index.html', pedidos=pedidos)
 
+@app.route('/pedidos/<int:id_pedido>', methods=['GET', 'POST'])
+def ver_detalle_pedido(id_pedido):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    if request.method == 'POST':
+
+        nuevo_estado = request.form['estado']
+        
+        if nuevo_estado in ['Pendiente', 'Completado']:
+            try:
+                sql_update = "UPDATE Pedidos SET estado = %s WHERE id_pedido = %s"
+                cursor.execute(sql_update, (nuevo_estado, id_pedido))
+                db.commit()
+                flash(f'Estado del Pedido #{id_pedido} actualizado a "{nuevo_estado}".', 'success')
+            except Exception as e:
+                db.rollback()
+                flash(f'Error al actualizar el estado: {e}', 'danger')
+        else:
+            flash('Estado no válido.', 'danger')
+        
+        cursor.close()
+        db.close()
+        return redirect(url_for('ver_detalle_pedido', id_pedido=id_pedido))
+
+
+    sql_pedido = """
+    SELECT 
+        p.id_pedido, p.fecha_pedido, p.estado, p.total,
+        c.id_cliente, c.nombre AS nombre_cliente, c.email AS email_cliente
+    FROM Pedidos p
+    JOIN Clientes c ON p.id_cliente = c.id_cliente
+    WHERE p.id_pedido = %s
+    """
+    cursor.execute(sql_pedido, (id_pedido,))
+    pedido = cursor.fetchone()
+
+    if not pedido:
+        cursor.close()
+        db.close()
+        flash('Pedido no encontrado.', 'danger')
+        return redirect(url_for('pedidos_index'))
+
+    sql_detalles = """
+    SELECT 
+        dp.cantidad, dp.precio_unitario,
+        pr.nombre_producto, pr.id_producto
+    FROM Detalle_Pedido dp
+    JOIN Productos pr ON dp.id_producto = pr.id_producto
+    WHERE dp.id_pedido = %s
+    """
+    cursor.execute(sql_detalles, (id_pedido,))
+    detalles = cursor.fetchall()
+    
+    cursor.close()
+    db.close()
+    
+    return render_template('pedidos/detalle_pedido.html', pedido=pedido, detalles=detalles)
+
 if __name__ == '__main__':
     app.run(debug=True)
